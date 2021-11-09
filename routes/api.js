@@ -38,10 +38,20 @@ router.get("/api/workouts", (req, res) => {
     });
 });
 
-// addExercise 
+// addExercise to existing workout
 router.put("/api/workouts/:id", async (req, res) => {
     try {
-        const newExercise = await Workout.update({_id: mongojs.ObjectId(req.params.id)}, { $push: { exercises: req.body }
+        const newExercise = await db.workouts.insert({ _id: mongojs.ObjectId(req.params.id)}, { $push: { exercises: 
+            {
+                type: req.body.type,
+                name: req.body.name,
+                duration: req.body.duration,
+                weight: req.body.weight,
+                reps: req.body.reps,
+                sets: req.body.sets,
+                distance: req.body.distance
+            }
+        }
         });
         res.status(200).json(newExercise);
     } catch(err) {
@@ -50,21 +60,19 @@ router.put("/api/workouts/:id", async (req, res) => {
 });
 
 // createWorkout 
-router.post("/api/workouts", ({body}, res) => {
-    Workout.create()
-    .then(dbWorkout => {
-        res.json(dbWorkout);
-    })
-    .catch(err => {
-        res.status(400).json(err);
-    });
+router.post("/api/workouts", async (req, res) => {
+    try {
+        const newWorkout = await Workout.create({})
+    } catch(err) {
+        res.status(500).json(err)
+    }
 });
 
 // getWorkoutsInRange 
 router.get("/api/workouts/range", (req, res) => {
     Workout.find({
         day: {
-            $lte: new Date(new Date().setDate(new Date().getDate())),
+            $lte: Date(),
             $gt: new Date(new Date().setDate(new Date().getDate() - 7))
         }
     })
