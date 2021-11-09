@@ -1,5 +1,9 @@
 const router = require("express").Router();
 const path = require("path")
+const mongojs = require("mongojs");
+
+const databaseUrl = "workout";
+const collections = ["workouts"];
 
 const db = mongojs(databaseUrl, collections);
 
@@ -21,3 +25,5 @@ router.get('/', (req, res) =>
 router.get('/stats', (req, res) =>
     res.sendFile(path.join(__dirname, '../public/stats.html'))
 );
+
+module.exports = router;

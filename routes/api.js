@@ -12,23 +12,9 @@ db.on("error", error => {
   console.log("Database Error:", error);
 });
 
-// render Exercise.html
-router.get('/exercise', (req, res) =>
-    res.sendFile(path.join(__dirname, '../public/exercise.html'))
-);
-
-// render Exercise.html
-router.get('/', (req, res) =>
-    res.sendFile(path.join(__dirname, '../public/index.html'))
-);
-
-// render Exercise.html
-router.get('/stats', (req, res) =>
-    res.sendFile(path.join(__dirname, '../public/stats.html'))
-);
 
 // getLastWorkout
-router.get("/api/workouts", (req, res) => {
+router.get("/workouts", (req, res) => {
     Workout.find({}).sort({_id:-1}).limit(1)
     .then(dbWorkout => {
         res.json(dbWorkout);
@@ -39,7 +25,7 @@ router.get("/api/workouts", (req, res) => {
 });
 
 // addExercise 
-router.put("/api/workouts/:id", async (req, res) => {
+router.put("/workouts/:id", async (req, res) => {
     try {
         const newExercise = await Workout.findByIdAndUpdate(req.params.id, 
             {
@@ -47,8 +33,6 @@ router.put("/api/workouts/:id", async (req, res) => {
                     exercises: req.body
                 }
             });
-        console.log(req.params.id)
-        console.log(req.body)
         res.status(200).json(newExercise);
     } catch(err) {
         res.status(500).json(err);
@@ -56,7 +40,7 @@ router.put("/api/workouts/:id", async (req, res) => {
 });
 
 // createWorkout 
-router.post("/api/workouts", async (req, res) => {
+router.post("/workouts", async (req, res) => {
     try {
         const newWorkout = await Workout.create({});
         res.status(200).json(newWorkout);
@@ -66,11 +50,11 @@ router.post("/api/workouts", async (req, res) => {
 });
 
 // getWorkoutsInRange 
-router.get("/api/workouts/range", (req, res) => {
+router.get("/workouts/range", (req, res) => {
     Workout.find({
         day: {
-            $lte: Date(),
-            $gt: new Date().getDate() - 7
+            $lte: new Date(),
+            $gte: new Date(new Date().setDate(new Date().getDate()-7))
         }
     })
     .then(dbWorkout => {
