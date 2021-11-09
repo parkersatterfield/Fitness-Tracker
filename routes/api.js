@@ -58,7 +58,8 @@ router.put("/api/workouts/:id", async (req, res) => {
 // createWorkout 
 router.post("/api/workouts", async (req, res) => {
     try {
-        const newWorkout = await Workout.create({})
+        const newWorkout = await Workout.create({});
+        res.status(200).json(newWorkout);
     } catch(err) {
         res.status(500).json(err)
     }
