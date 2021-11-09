@@ -38,21 +38,17 @@ router.get("/api/workouts", (req, res) => {
     });
 });
 
-// addExercise to existing workout
+// addExercise 
 router.put("/api/workouts/:id", async (req, res) => {
     try {
-        const newExercise = await db.workouts.insert({ _id: mongojs.ObjectId(req.params.id)}, { $push: { exercises: 
+        const newExercise = await Workout.findByIdAndUpdate(req.params.id, 
             {
-                type: req.body.type,
-                name: req.body.name,
-                duration: req.body.duration,
-                weight: req.body.weight,
-                reps: req.body.reps,
-                sets: req.body.sets,
-                distance: req.body.distance
-            }
-        }
-        });
+                $push: {
+                    exercises: req.body
+                }
+            });
+        console.log(req.params.id)
+        console.log(req.body)
         res.status(200).json(newExercise);
     } catch(err) {
         res.status(500).json(err);
@@ -73,7 +69,7 @@ router.get("/api/workouts/range", (req, res) => {
     Workout.find({
         day: {
             $lte: Date(),
-            $gt: new Date(new Date().setDate(new Date().getDate() - 7))
+            $gt: new Date().getDate() - 7
         }
     })
     .then(dbWorkout => {
