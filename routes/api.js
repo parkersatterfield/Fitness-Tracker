@@ -12,10 +12,15 @@ db.on("error", error => {
   console.log("Database Error:", error);
 });
 
-
 // getLastWorkout
 router.get("/workouts", (req, res) => {
     Workout.find({}).sort({_id:-1}).limit(1)
+    // aggregate duration function
+    Workout.aggregate([{
+        $addFields: {
+            totalDuration: {$sum: "$exercises.duration"}
+        }
+    }])
     .then(dbWorkout => {
         res.json(dbWorkout);
     })
@@ -57,6 +62,12 @@ router.get("/workouts/range", (req, res) => {
             $gte: new Date(new Date().setDate(new Date().getDate()-7))
         }
     })
+    // aggregate duration function
+    Workout.aggregate([{
+        $addFields: {
+            totalDuration: {$sum: "$exercises.duration"}
+        }
+    }])
     .then(dbWorkout => {
         res.json(dbWorkout);
     })
